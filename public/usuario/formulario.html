@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Asignación | LA SAGRADA FAMILIA R.L.</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header" style="text-align:center;padding:22px 14px 16px 14px;display:flex;flex-direction:column;align-items:center;">
+                <img id="fotoSidebar"
+                     src="/Imagen/loguin.jpg"
+                     alt="Foto de perfil"
+                     class="foto-usuario"
+                     style="display:block;margin:0 auto;"
+                     onerror="this.src='/Imagen/loguin.jpg'">
+                <div id="sidebarNombreDiv" class="sidebar-text"
+                     style="font-weight:bold;font-size:0.95rem;color:#fff;
+                            margin-top:10px;margin-bottom:2px;text-align:center;
+                            display:block;width:100%;line-height:1.3;">
+                    Cargando...
+                </div>
+                <div id="sidebarCargoDiv" class="sidebar-text"
+                     style="font-size:0.78rem;color:rgba(255,255,255,0.85);
+                            margin-bottom:5px;text-align:center;
+                            display:block;width:100%;line-height:1.3;">-</div>
+                <div class="sidebar-text" style="font-size:0.72rem;color:rgba(255,255,255,0.65);font-style:italic;text-align:center;display:block;width:100%;">
+                    &quot;LA SAGRADA FAMILIA&quot; R.L.
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+                <div class="menu-section">
+                    <div class="menu-section-title">Menú Principal</div>
+                    <a href="/usuario/dashboard.html" class="menu-item" data-tooltip="Dashboard">
+                        <span class="icon">&#127968;</span>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="/usuario/formulario.html" class="menu-item" data-tooltip="Registrar Asignación" active">
+                        <span class="icon">&#128221;</span>
+                        <span>Registrar Asignación</span>
+                    </a>
+                </div>
+                <div class="menu-section">
+                    <div class="menu-section-title">Cuenta</div>
+                    <a href="#" class="menu-item" data-tooltip="Cerrar Sesión" onclick="cerrarSesion()">
+                        <span class="icon">&#128682;</span>
+                        <span>Cerrar Sesión</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+        <main class="main-content" id="mainContent">
+            <header class="header">				
+				<div class="header-left">
+				  <button class="menu-toggle" id="toggleMenuBtn" onclick="toggleSidebar()">☰</button>
+				  <h1 class="page-title">Registrar Nueva Asignación</h1>
+				</div>
+                <div class="header-right">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">US</div>
+                        <div class="user-details">
+                            <div class="user-name" id="userName">Usuario</div>
+                            <div class="user-role" id="userRole">usuario</div>
+                        </div>
+                    </div>
+                    <button class="btn-logout" onclick="cerrarSesion()">
+                        <span>&#128682;</span>
+                        <span>Cerrar Sesión</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <form id="formAsignacion" enctype="multipart/form-data">
+                    <!-- Datos de Asignación -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title"><span>✈️</span> Datos de la Asignación</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group required">
+                                    <label for="ciudad_origen">Ciudad Origen</label>
+                                    <input type="text" id="ciudad_origen" oninput="this.value=this.value.toUpperCase()" placeholder="Ej: LA PAZ" required>
+                                </div>
+                                <div class="form-group required">
+                                    <label for="ciudad_destino">Ciudad Destino</label>
+                                    <input type="text" id="ciudad_destino" oninput="this.value=this.value.toUpperCase()" placeholder="Ej: SANTA CRUZ" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group required">
+                                    <label for="fecha_salida">Fecha Salida</label>
+                                    <input type="date" id="fecha_salida" required>
+                                </div>
+                                <div class="form-group required">
+                                    <label for="fecha_llegada">Fecha Llegada</label>
+                                    <input type="date" id="fecha_llegada" required>
+                                </div>
+                                <div class="form-group required">
+                                    <label for="monto_asignacion">Monto Asignación (Bs.)</label>
+                                    <input type="number" id="monto_asignacion" step="0.01" min="0" placeholder="0.00" oninput="actualizarResumen()" required>
+                                    <span class="help-text">Debe ser 0 o mayor</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Gastos -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title"><span>&#128176;</span> Detalle de Gastos</h2>
+                        </div>
+                        <div class="card-body">
+                            <!-- Vista escritorio: tabla -->
+                            <div class="gastos-table-wrapper gastos-desktop">
+                                <table class="gastos-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:40px">Nº</th>
+                                            <th style="width:160px">Tipo Gasto</th>
+                                            <th style="width:210px">Detalle Proveedor</th>
+                                            <th style="width:150px">Comprobante</th>
+                                            <th style="width:100px">Nº Comp.</th>
+                                            <th style="width:100px">Monto</th>
+                                            <th style="width:120px">Documento</th>
+                                            <th style="width:160px">Observaciones</th>
+                                            <th style="width:110px">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="gastosBody"></tbody>
+                                </table>
+                            </div>
+
+                            <!-- Vista móvil: tarjetas -->
+                            <div class="gastos-cards gastos-mobile" id="gastosCards"></div>
+
+							<div style="text-align: right; margin-bottom: 20px; margin-top:10px;">
+								<button type="button" class="btn btn-success btn-sm" onclick="agregarFila()">➕ Agregar Gasto</button>
+							</div>
+
+							<div class="total-section">
+								<div class="total-amount">TOTAL GASTOS: <span id="totalGastos">0.00</span> Bs.</div>
+							</div>
+
+                            <!-- RESUMEN FINANCIERO -->
+                            <div id="resumenFinanciero" class="mt-2" style="display:none;">
+                                <div style="border: 3px solid var(--color-primario); border-radius: 8px; padding: 20px; background: #f9f9f9;">
+                                    <h3 style="margin-bottom:15px; text-align:center; color: var(--color-primario);">&#128202; RESUMEN FINANCIERO</h3>
+                                    <div style="display:flex; justify-content:space-around; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                                        <div><strong>Monto Asignación:</strong> <span id="previewAsignacion">0.00</span> Bs.</div>
+                                        <div><strong>Total Gastos:</strong> <span id="previewGastos">0.00</span> Bs.</div>
+                                    </div>
+                                    <div id="resultadoDiferencia" style="padding:15px; border-radius:5px; text-align:center; font-weight:bold; font-size:1.3em;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-between flex-wrap gap-2">
+                                <a href="/usuario/dashboard.html" class="btn btn-secondary">← Cancelar</a>
+                                <button type="button" class="btn btn-primary btn-lg" id="btnRegistrar" onclick="registrarAsignacion(event)">✓ REGISTRAR ASIGNACIÓN</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Éxito -->
+    <div class="modal-overlay" id="modalExito">
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-header" style="background: var(--color-primario); color: white;">
+                <h3 class="modal-title" style="color: white;">&#10003; ¡Registro Exitoso!</h3>
+            </div>
+            <div class="modal-body text-center">
+                <div style="font-size: 4rem; margin-bottom: 20px;">🎉</div>
+                <h3 style="color: var(--color-primario); margin-bottom: 15px;">¡Formulario registrado correctamente!</h3>
+                <p style="margin-bottom: 20px;">Tu asignación ha sido guardada exitosamente. Puedes descargar el PDF las veces que necesites.</p>
+                <div id="resumenExito" style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 20px;"></div>
+            </div>
+            <div class="modal-footer" style="justify-content: center; gap: 15px;">
+                <button class="btn btn-primary btn-lg" onclick="descargarPDFExito()">
+                    &#128229; DESCARGAR PDF
+                </button>
+                <button class="btn btn-secondary" onclick="cerrarModalExito()">
+                    Cerrar y Volver
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/utils.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        let contadorFilas = 0;
+        let asignacionRegistrada = null;
+        let formularioYaRegistrado = false;
+
+        // ── Tabla de conversión departamento → extensión ──────────────────
+        const DEPARTAMENTOS = {
+            'LA PAZ':     'LP',
+            'SANTA CRUZ': 'SC',
+            'COCHABAMBA': 'CB',
+            'ORURO':      'OR',
+            'POTOSÍ':     'PT',
+            'POTOSI':     'PT',
+            'CHUQUISACA': 'CH',
+            'TARIJA':     'TJ',
+            'BENI':       'BE',
+            'PANDO':      'PD'
+        };
+        function deptToExt(valor) {
+            const v = (valor || '').trim().toUpperCase();
+            return DEPARTAMENTOS[v] || v;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('▶ DOMContentLoaded formulario.html');
+            const usuario = getUsuario();
+            console.log('▶ Usuario en localStorage:', usuario);
+
+            if (!checkPagePermission(['usuario'])) {
+                console.log('✗ checkPagePermission falló — el evento submit NO se registrará');
+                return;
+            }
+            console.log('✓ Permiso OK, registrando evento submit...');
+            initUserInfo();
+            cargarFotoSidebar();
+            agregarFila();
+
+            const form = document.getElementById('formAsignacion');
+            form.addEventListener('submit', registrarAsignacion);
+
+            // Respaldo: también en el botón directamente
+            const btn = document.getElementById('btnRegistrar');
+            if (btn) {
+                btn.addEventListener('click', function(e) {
+                    // Solo actuar si el form no dispara submit solo
+                    // (el submit del form ya llama registrarAsignacion)
+                });
+            }
+            console.log('✓ Evento submit registrado en formAsignacion');
+        });
+
+        // ── Determinar si estamos en móvil ────────────────────────────────
+        function esMobil() { return window.innerWidth < 768; }
+
+        // ── Agregar fila (escritorio) + tarjeta (móvil) ───────────────────
+        function agregarFila() {
+            contadorFilas++;
+            const n = contadorFilas;
+
+            // ── FILA para tabla escritorio ────────────────────────────────
+            const tbody = document.getElementById('gastosBody');
+            const row = document.createElement('tr');
+            row.id = `fila_${n}`;
+            row.innerHTML = buildFilaHTML(n);
+            tbody.appendChild(row);
+
+            // ── TARJETA para móvil ────────────────────────────────────────
+            const cards = document.getElementById('gastosCards');
+            const card = document.createElement('div');
+            card.id = `card_${n}`;
+            card.className = 'gasto-card';
+            card.innerHTML = buildCardHTML(n);
+            cards.appendChild(card);
+
+            sincronizarFilaCard(n);
+        }
+
+        function buildFilaHTML(n) {
+            return `
+                <td class="text-center fila-numero">${n}</td>
+                <td>
+                    <select name="tipo_gasto" class="tipo-gasto" onchange="toggleProveedor(this, ${n})" required>
+                        <option value="">Seleccionar..</option>
+                        <option value="PASAJE">PASAJE</option>
+                        <option value="HOSPEDAJE">HOSPEDAJE</option>
+                        <option value="OTROS SERVICIOS">OTROS SERVICIOS</option>
+                        <option value="COMBUSTIBLE">COMBUSTIBLE</option>
+                        <option value="OTROS BIENES">OTROS BIENES</option>
+                    </select>
+                </td>
+                <td>
+                    <div class="hospedaje-fields" id="prov_${n}">
+                        <div style="margin-bottom:4px;">
+                            <label style="font-size:0.72rem;font-weight:600;display:block;">Nombre Proveedor</label>
+                            <input type="text" name="nombre_proveedor" placeholder="Nombre" style="font-size:0.8rem;"
+                                   oninput="this.value=this.value.toUpperCase(); actualizarReqObs(${n})">
+                        </div>
+                        <div style="margin-bottom:4px;">
+                            <label style="font-size:0.72rem;font-weight:600;display:block;">N° CI (solo números)</label>
+                            <input type="number" name="ci_proveedor" placeholder="CI" style="font-size:0.8rem;"
+                                   oninput="actualizarReqObs(${n})">
+                        </div>
+                        <div>
+                            <label style="font-size:0.72rem;font-weight:600;display:block;">Departamento / Ext. CI</label>
+                            <select name="ext_proveedor" style="font-size:0.8rem;" onchange="actualizarReqObs(${n})">
+                                <option value="">-- Dpto --</option>
+                                <option value="LP">La Paz (LP)</option>
+                                <option value="SC">Santa Cruz (SC)</option>
+                                <option value="CB">Cochabamba (CB)</option>
+                                <option value="OR">Oruro (OR)</option>
+                                <option value="PT">Potosí (PT)</option>
+                                <option value="CH">Chuquisaca (CH)</option>
+                                <option value="TJ">Tarija (TJ)</option>
+                                <option value="BE">Beni (BE)</option>
+                                <option value="PD">Pando (PD)</option>
+                            </select>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <select name="tipo_comprobante" onchange="toggleObservaciones(this)" required>
+                        <option value="">Seleccionar..</option>
+                        <option value="FACTURA">FACTURA</option>
+                        <option value="RECIBO">RECIBO</option>
+                        <option value="NINGUNO">NINGUNO</option>
+                    </select>
+                    <div class="fecha-emision-wrap" style="display:none;margin-top:4px;">
+                        <label style="font-size:0.72rem;font-weight:600;display:block;">Fecha Emisión</label>
+                        <input type="date" name="fecha_emision_comprobante" style="font-size:0.8rem;">
+                    </div>
+                </td>
+                <td>
+                    <input type="text" name="numero_comprobante" placeholder="Número">
+                </td>
+                <td>
+                    <input type="number" name="monto" step="0.01" min="0.01" placeholder="0.00" oninput="calcularTotal()" required>
+                </td>
+                <td>
+                  <div class="doc-wrap">
+                    <label class="btn-adj" style="cursor:pointer;background:var(--color-secundario);
+                           color:white;padding:4px 8px;border-radius:4px;font-size:0.75rem;"
+                           onclick="this.nextElementSibling.click()">📎 Adjuntar</label>
+                    <input type="file" name="documento" accept="image/*,.pdf"
+                           style="display:none;" onchange="manejarAdjunto(this)">
+                    <div class="doc-prev" style="display:none;align-items:center;gap:4px;margin-top:4px;">
+                      <img class="doc-thumb" style="width:48px;height:48px;object-fit:cover;border-radius:4px;">
+                      <span class="doc-pdf" style="display:none;font-size:1.6rem;">&#128196;</span>
+                      <button type="button" onclick="verAdj(this)" title="Ver" style="background:none;border:none;cursor:pointer;font-size:1rem;">&#128269;</button>
+                      <button type="button" onclick="quitarAdj(this)" title="Quitar" style="background:none;border:none;cursor:pointer;font-size:1rem;">🗑️</button>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                    <textarea name="observaciones" placeholder="Observaciones..."
+                              rows="2" style="font-size:0.8rem;text-transform:uppercase;"
+                              oninput="this.value=this.value.toUpperCase()"></textarea>
+                    <span class="obs-req-hint" style="display:none;font-size:0.7rem;color:var(--color-error);">⚠ Obligatorio si proveedor vacío</span>
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn-eliminar-gasto" onclick="eliminarFila(this)">ELIMINAR GASTO</button>
+                </td>
+            `;
+        }
+
+        function buildCardHTML(n) {
+            return `
+                <div class="gasto-card-header">
+                    <span class="gasto-card-num">Gasto #${n}</span>
+                    <button type="button" class="btn-eliminar-gasto" onclick="eliminarFila(this)">✕ Eliminar</button>
+                </div>
+                <div class="gasto-card-body">
+                    <div class="form-group required">
+                        <label>Tipo de Gasto</label>
+                        <select name="tipo_gasto" class="tipo-gasto" onchange="toggleProveedorCard(this, ${n})" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="PASAJE">PASAJE</option>
+                            <option value="HOSPEDAJE">HOSPEDAJE</option>
+                            <option value="OTROS SERVICIOS">OTROS SERVICIOS</option>
+                            <option value="COMBUSTIBLE">COMBUSTIBLE</option>
+                            <option value="OTROS BIENES">OTROS BIENES</option>
+                        </select>
+                    </div>
+
+                    <div class="hospedaje-fields" id="cprov_${n}">
+                        <div class="form-group">
+                            <label>Nombre Proveedor</label>
+                            <input type="text" name="nombre_proveedor" placeholder="Nombre proveedor"
+                                   oninput="this.value=this.value.toUpperCase(); actualizarReqObsCard(${n})">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>N° CI Proveedor</label>
+                                <input type="number" name="ci_proveedor" placeholder="Número CI"
+                                       oninput="actualizarReqObsCard(${n})">
+                            </div>
+                            <div class="form-group">
+                                <label>Departamento / Ext. CI</label>
+                                <select name="ext_proveedor" onchange="actualizarReqObsCard(${n})">
+                                    <option value="">-- Dpto --</option>
+                                    <option value="LP">La Paz (LP)</option>
+                                    <option value="SC">Santa Cruz (SC)</option>
+                                    <option value="CB">Cochabamba (CB)</option>
+                                    <option value="OR">Oruro (OR)</option>
+                                    <option value="PT">Potosí (PT)</option>
+                                    <option value="CH">Chuquisaca (CH)</option>
+                                    <option value="TJ">Tarija (TJ)</option>
+                                    <option value="BE">Beni (BE)</option>
+                                    <option value="PD">Pando (PD)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group required">
+                            <label>Tipo Comprobante</label>
+                            <select name="tipo_comprobante" onchange="toggleObservacionesCard(this)" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="FACTURA">FACTURA</option>
+                                <option value="RECIBO">RECIBO</option>
+                                <option value="NINGUNO">NINGUNO</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>N° Comprobante</label>
+                            <input type="text" name="numero_comprobante" placeholder="Número">
+                        </div>
+                    </div>
+
+                    <div class="fecha-emision-wrap" style="display:none;">
+                        <div class="form-group">
+                            <label>Fecha Emisión</label>
+                            <input type="date" name="fecha_emision_comprobante">
+                        </div>
+                    </div>
+
+                    <div class="form-group required">
+                        <label>Monto (Bs.)</label>
+                        <input type="number" name="monto" step="0.01" min="0.01" placeholder="0.00" oninput="calcularTotal()" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Documento Adjunto</label>
+                        <div class="doc-wrap">
+                            <label class="btn-adj" style="cursor:pointer;background:var(--color-secundario);
+                                   color:white;padding:8px 12px;border-radius:4px;font-size:0.85rem;display:inline-block;"
+                                   onclick="this.nextElementSibling.click()">📎 Adjuntar archivo</label>
+                            <input type="file" name="documento" accept="image/*,.pdf"
+                                   style="display:none;" onchange="manejarAdjunto(this)">
+                            <div class="doc-prev" style="display:none;align-items:center;gap:8px;margin-top:8px;">
+                              <img class="doc-thumb" style="width:56px;height:56px;object-fit:cover;border-radius:4px;">
+                              <span class="doc-pdf" style="display:none;font-size:2rem;">&#128196;</span>
+                              <button type="button" onclick="verAdj(this)" style="background:none;border:none;cursor:pointer;font-size:1.2rem;">&#128269;</button>
+                              <button type="button" onclick="quitarAdj(this)" style="background:none;border:none;cursor:pointer;font-size:1.2rem;">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Observaciones <span class="obs-req-hint" style="display:none;color:var(--color-error);font-size:0.8rem;">⚠ Obligatorio si proveedor vacío</span></label>
+                        <textarea name="observaciones" placeholder="OBSERVACIONES..."
+                                  rows="2" style="text-transform:uppercase;"
+                                  oninput="this.value=this.value.toUpperCase()"></textarea>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ── Sincronizar datos fila↔tarjeta (misma fila lógica) ───────────
+        // En este diseño la fila de tabla y la tarjeta son independientes.
+        // La recogida de datos usa el selector activo según viewport.
+        function sincronizarFilaCard(n) { /* reservado para futura sincronización */ }
+
+        // ── Obtener filas activas según viewport ──────────────────────────
+        function getFilasActivas() {
+            if (esMobil()) {
+                return Array.from(document.querySelectorAll('#gastosCards .gasto-card'));
+            }
+            return Array.from(document.querySelectorAll('#gastosBody tr'));
+        }
+
+        // ── Eliminar fila (funciona en tabla y tarjeta) ───────────────────
+        function eliminarFila(btn) {
+            const esTarjeta = btn.closest('.gasto-card') !== null;
+            const contenedor = esTarjeta ? '#gastosCards .gasto-card' : '#gastosBody tr';
+            if (document.querySelectorAll(contenedor).length <= 1) {
+                showToast('Debe tener al menos un gasto', 'warning');
+                return;
+            }
+            showConfirm('Eliminar Gasto', '¿Está seguro de eliminar este gasto?').then(ok => {
+                if (!ok) return;
+                if (esTarjeta) {
+                    const card = btn.closest('.gasto-card');
+                    const cardId = card.id; // card_N
+                    const n = cardId.replace('card_','');
+                    card.remove();
+                    // También eliminar fila de tabla correspondiente
+                    const fila = document.getElementById(`fila_${n}`);
+                    if (fila) fila.remove();
+                } else {
+                    const fila = btn.closest('tr');
+                    const filaId = fila.id; // fila_N
+                    const n = filaId.replace('fila_','');
+                    fila.remove();
+                    const card = document.getElementById(`card_${n}`);
+                    if (card) card.remove();
+                }
+                renumerarFilas();
+                calcularTotal();
+            });
+        }
+
+        function renumerarFilas() {
+            document.querySelectorAll('#gastosBody tr').forEach((fila, i) => {
+                const num = fila.querySelector('.fila-numero');
+                if (num) num.textContent = i + 1;
+            });
+            document.querySelectorAll('#gastosCards .gasto-card').forEach((card, i) => {
+                const num = card.querySelector('.gasto-card-num');
+                if (num) num.textContent = `Gasto #${i + 1}`;
+            });
+        }
+
+        // ── Toggle proveedor (tabla escritorio) ───────────────────────────
+        function toggleProveedor(select, n) {
+            const row = select.closest('tr');
+            const fields = row.querySelector('.hospedaje-fields');
+            const val = select.value;
+            const mostrar = (val === 'HOSPEDAJE' || val === 'COMBUSTIBLE');
+            if (mostrar) {
+                fields.classList.add('visible');
+            } else {
+                fields.classList.remove('visible');
+                fields.querySelectorAll('input, select').forEach(el => el.value = '');
+            }
+            actualizarReqObs(n);
+        }
+
+        // ── Toggle proveedor (tarjeta móvil) ──────────────────────────────
+        function toggleProveedorCard(select, n) {
+            const card = select.closest('.gasto-card');
+            const fields = card.querySelector('.hospedaje-fields');
+            const val = select.value;
+            const mostrar = (val === 'HOSPEDAJE' || val === 'COMBUSTIBLE');
+            if (mostrar) {
+                fields.classList.add('visible');
+            } else {
+                fields.classList.remove('visible');
+                fields.querySelectorAll('input, select').forEach(el => el.value = '');
+            }
+            actualizarReqObsCard(n);
+        }
+
+        // ── Lógica observaciones según proveedor (tabla) ──────────────────
+        function actualizarReqObs(n) {
+            const fila = document.getElementById(`fila_${n}`);
+            if (!fila) return;
+            const provFields = fila.querySelector('.hospedaje-fields');
+            const obs = fila.querySelector('[name="observaciones"]');
+            const hint = fila.querySelector('.obs-req-hint');
+            if (!provFields || !obs) return;
+
+            if (provFields.classList.contains('visible')) {
+                const nombre = fila.querySelector('[name="nombre_proveedor"]').value.trim();
+                const ci = fila.querySelector('[name="ci_proveedor"]').value.trim();
+                const ext = fila.querySelector('[name="ext_proveedor"]').value.trim();
+                const providerLleno = nombre && ci && ext;
+                if (providerLleno) {
+                    obs.required = false;
+                    obs.style.borderColor = '';
+                    obs.placeholder = 'OBSERVACIONES... (opcional)';
+                    if (hint) hint.style.display = 'none';
+                } else {
+                    obs.required = true;
+                    obs.style.borderColor = 'var(--color-error)';
+                    obs.placeholder = 'OBLIGATORIO SI PROVEEDOR VACÍO';
+                    if (hint) hint.style.display = 'inline';
+                }
+            } else {
+                // Para NINGUNO la lógica de comprobante ya lo maneja
+                // Para otros no es obligatorio
+                if (fila.querySelector('[name="tipo_comprobante"]').value !== 'NINGUNO') {
+                    obs.required = false;
+                    obs.style.borderColor = '';
+                    obs.placeholder = 'OBSERVACIONES...';
+                    if (hint) hint.style.display = 'none';
+                }
+            }
+        }
+
+        // ── Lógica observaciones según proveedor (tarjeta) ────────────────
+        function actualizarReqObsCard(n) {
+            const card = document.getElementById(`card_${n}`);
+            if (!card) return;
+            const provFields = card.querySelector('.hospedaje-fields');
+            const obs = card.querySelector('[name="observaciones"]');
+            const hint = card.querySelector('.obs-req-hint');
+            if (!provFields || !obs) return;
+
+            if (provFields.classList.contains('visible')) {
+                const nombre = card.querySelector('[name="nombre_proveedor"]').value.trim();
+                const ci = card.querySelector('[name="ci_proveedor"]').value.trim();
+                const ext = card.querySelector('[name="ext_proveedor"]').value.trim();
+                const providerLleno = nombre && ci && ext;
+                if (providerLleno) {
+                    obs.required = false;
+                    obs.style.borderColor = '';
+                    obs.placeholder = 'OBSERVACIONES... (opcional)';
+                    if (hint) hint.style.display = 'none';
+                } else {
+                    obs.required = true;
+                    obs.style.borderColor = 'var(--color-error)';
+                    obs.placeholder = 'OBLIGATORIO SI PROVEEDOR VACÍO';
+                    if (hint) hint.style.display = 'inline';
+                }
+            }
+        }
+
+        // ── Toggle observaciones por comprobante (tabla) ──────────────────
+        function toggleObservaciones(select) {
+            const row = select.closest('tr');
+            const obs = row.querySelector('[name="observaciones"]');
+            const numComp = row.querySelector('[name="numero_comprobante"]');
+            const fechaWrap = row.querySelector('.fecha-emision-wrap');
+            const fechaInput = row.querySelector('[name="fecha_emision_comprobante"]');
+            const hint = row.querySelector('.obs-req-hint');
+
+            if (select.value === 'NINGUNO') {
+                obs.required = true; obs.style.borderColor = 'var(--color-error)';
+                obs.placeholder = 'OBLIGATORIO'; numComp.required = false;
+                if (fechaWrap) fechaWrap.style.display = 'none';
+                if (fechaInput) fechaInput.required = false;
+                if (hint) hint.style.display = 'none';
+            } else if (select.value === 'FACTURA' || select.value === 'RECIBO') {
+                obs.required = false; obs.style.borderColor = '';
+                obs.placeholder = 'OBSERVACIONES...'; numComp.required = true;
+                if (fechaWrap) fechaWrap.style.display = 'block';
+                if (fechaInput) fechaInput.required = true;
+            } else {
+                obs.required = false; obs.style.borderColor = '';
+                obs.placeholder = 'OBSERVACIONES...'; numComp.required = false;
+                if (fechaWrap) fechaWrap.style.display = 'none';
+                if (fechaInput) fechaInput.required = false;
+            }
+        }
+
+        // ── Toggle observaciones por comprobante (tarjeta) ────────────────
+        function toggleObservacionesCard(select) {
+            const card = select.closest('.gasto-card');
+            const obs = card.querySelector('[name="observaciones"]');
+            const numComp = card.querySelector('[name="numero_comprobante"]');
+            const fechaWrap = card.querySelector('.fecha-emision-wrap');
+            const fechaInput = card.querySelector('[name="fecha_emision_comprobante"]');
+
+            if (select.value === 'NINGUNO') {
+                obs.required = true; obs.style.borderColor = 'var(--color-error)';
+                obs.placeholder = 'OBLIGATORIO'; numComp.required = false;
+                if (fechaWrap) fechaWrap.style.display = 'none';
+                if (fechaInput) fechaInput.required = false;
+            } else if (select.value === 'FACTURA' || select.value === 'RECIBO') {
+                obs.required = false; obs.style.borderColor = '';
+                obs.placeholder = 'OBSERVACIONES...'; numComp.required = true;
+                if (fechaWrap) fechaWrap.style.display = 'block';
+                if (fechaInput) fechaInput.required = true;
+            } else {
+                obs.required = false; obs.style.borderColor = '';
+                obs.placeholder = 'OBSERVACIONES...'; numComp.required = false;
+                if (fechaWrap) fechaWrap.style.display = 'none';
+                if (fechaInput) fechaInput.required = false;
+            }
+        }
+
+        function calcularTotal() {
+            let total = 0;
+            // Sumar todos los campos monto visibles (tabla + tarjetas, evitar doble suma)
+            // Usar los de tabla siempre como fuente de verdad en escritorio, tarjetas en móvil
+            const fuente = esMobil() ? '#gastosCards [name="monto"]' : '#gastosBody [name="monto"]';
+            document.querySelectorAll(fuente).forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+            document.getElementById('totalGastos').textContent = total.toFixed(2);
+            actualizarResumen();
+        }
+
+        function actualizarResumen() {
+            const montoAsignacion = parseFloat(document.getElementById('monto_asignacion').value) || 0;
+            const totalGastos = parseFloat(document.getElementById('totalGastos').textContent) || 0;
+            const resumenDiv = document.getElementById('resumenFinanciero');
+            if (montoAsignacion > 0 || totalGastos > 0) {
+                resumenDiv.style.display = 'block';
+                document.getElementById('previewAsignacion').textContent = montoAsignacion.toFixed(2);
+                document.getElementById('previewGastos').textContent = totalGastos.toFixed(2);
+                const diferencia = montoAsignacion - totalGastos;
+                const resultadoDiv = document.getElementById('resultadoDiferencia');
+                if (diferencia >= 0) {
+                    resultadoDiv.style.background = 'var(--color-primario)';
+                    resultadoDiv.style.color = 'white';
+                    resultadoDiv.innerHTML = `✓ RENDIR CUENTA: ${diferencia.toFixed(2)} Bs.`;
+                } else {
+                    resultadoDiv.style.background = 'var(--color-error)';
+                    resultadoDiv.style.color = 'white';
+                    resultadoDiv.innerHTML = `⚠ REPONER: ${Math.abs(diferencia).toFixed(2)} Bs.`;
+                }
+            } else {
+                resumenDiv.style.display = 'none';
+            }
+        }
+
+        // ── Recolectar datos de una fila (tabla o tarjeta) ────────────────
+        function recolectarGasto(el) {
+            return {
+                tipo_gasto:               el.querySelector('[name="tipo_gasto"]').value,
+                tipo_comprobante:         el.querySelector('[name="tipo_comprobante"]').value,
+                numero_comprobante:       el.querySelector('[name="numero_comprobante"]').value,
+                monto:                    el.querySelector('[name="monto"]').value,
+                observaciones:            el.querySelector('[name="observaciones"]').value.trim() || 'NINGUNA',
+                nombre_proveedor_hospedaje: el.querySelector('[name="nombre_proveedor"]').value,
+                ci_proveedor:             el.querySelector('[name="ci_proveedor"]').value,
+                extension_proveedor:      el.querySelector('[name="ext_proveedor"]').value,
+                fecha_emision_comprobante: el.querySelector('[name="fecha_emision_comprobante"]')?.value || null
+            };
+        }
+
+        function validarGasto(gasto, i) {
+            if (!gasto.tipo_gasto)        { showToast(`Gasto ${i+1}: Seleccione Tipo Gasto`, 'error'); return false; }
+            if (!gasto.tipo_comprobante)  { showToast(`Gasto ${i+1}: Seleccione Tipo Comprobante`, 'error'); return false; }
+            if (!gasto.monto || parseFloat(gasto.monto) <= 0) { showToast(`Gasto ${i+1}: Ingrese Monto válido`, 'error'); return false; }
+
+            if (gasto.tipo_comprobante === 'NINGUNO' && !gasto.observaciones.trim()) {
+                showToast(`Gasto ${i+1}: Observaciones obligatorias sin comprobante`, 'error'); return false;
+            }
+            if ((gasto.tipo_comprobante === 'FACTURA' || gasto.tipo_comprobante === 'RECIBO') && !gasto.numero_comprobante.trim()) {
+                showToast(`Gasto ${i+1}: Ingrese número de comprobante`, 'error'); return false;
+            }
+            if ((gasto.tipo_comprobante === 'FACTURA' || gasto.tipo_comprobante === 'RECIBO') && !gasto.fecha_emision_comprobante) {
+                showToast(`Gasto ${i+1}: Ingrese Fecha de Emisión del comprobante`, 'error'); return false;
+            }
+            // HOSPEDAJE: proveedor obligatorio
+            if (gasto.tipo_gasto === 'HOSPEDAJE') {
+                if (!gasto.nombre_proveedor_hospedaje.trim()) { showToast(`Gasto ${i+1}: Ingrese nombre proveedor hospedaje`, 'error'); return false; }
+                if (!gasto.ci_proveedor.toString().trim())    { showToast(`Gasto ${i+1}: Ingrese CI proveedor`, 'error'); return false; }
+            }
+            // COMBUSTIBLE: si proveedor parcialmente lleno, exigir todo o ninguno
+            if (gasto.tipo_gasto === 'COMBUSTIBLE') {
+                const tieneAlgo = gasto.nombre_proveedor_hospedaje.trim() || gasto.ci_proveedor.toString().trim() || gasto.extension_proveedor.trim();
+                const tieneTodo = gasto.nombre_proveedor_hospedaje.trim() && gasto.ci_proveedor.toString().trim() && gasto.extension_proveedor.trim();
+                if (tieneAlgo && !tieneTodo) {
+                    showToast(`Gasto ${i+1}: Complete todos los campos del proveedor o déjelos vacíos`, 'error'); return false;
+                }
+                if (!tieneTodo && !gasto.observaciones.trim()) {
+                    showToast(`Gasto ${i+1}: Si no ingresa proveedor, las Observaciones son obligatorias`, 'error'); return false;
+                }
+            }
+            return true;
+        }
+
+        function validarFormulario() {
+            const ciudadOrigen = document.getElementById('ciudad_origen').value.trim();
+            const ciudadDestino = document.getElementById('ciudad_destino').value.trim();
+            const fechaSalida = document.getElementById('fecha_salida').value;
+            const fechaLlegada = document.getElementById('fecha_llegada').value;
+            const montoAsignacion = parseFloat(document.getElementById('monto_asignacion').value);
+
+            if (!ciudadOrigen)  { showToast('Ingrese Ciudad Origen', 'error'); return false; }
+            if (!ciudadDestino) { showToast('Ingrese Ciudad Destino', 'error'); return false; }
+            if (!fechaSalida)   { showToast('Seleccione Fecha Salida', 'error'); return false; }
+            if (!fechaLlegada)  { showToast('Seleccione Fecha Llegada', 'error'); return false; }
+            if (new Date(fechaSalida) >= new Date(fechaLlegada)) {
+                showToast('Fecha Llegada debe ser posterior a Fecha Salida', 'error'); return false;
+            }
+            if (isNaN(montoAsignacion) || montoAsignacion < 0) {
+                showToast('El monto de asignación debe ser 0 o mayor', 'error'); return false;
+            }
+
+            const filas = getFilasActivas();
+            if (filas.length === 0) { showToast('Agregue al menos un gasto', 'error'); return false; }
+
+            for (let i = 0; i < filas.length; i++) {
+                const g = recolectarGasto(filas[i]);
+                if (!validarGasto(g, i)) return false;
+            }
+            return true;
+        }
+
+        async function registrarAsignacion(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('▶ registrarAsignacion ejecutándose...');
+
+            if (formularioYaRegistrado) {
+                showToast('Este formulario ya fue registrado. ¿Desea descargar el PDF?', 'warning');
+                document.getElementById('modalExito').classList.add('active');
+                return;
+            }
+
+            console.log('▶ Validando formulario...');
+            if (!validarFormulario()) {
+                console.log('✗ validarFormulario() retornó false');
+                return;
+            }
+            console.log('✓ Formulario válido');
+
+            const totalGastos = document.getElementById('totalGastos').textContent;
+            const montoAsignacion = document.getElementById('monto_asignacion').value;
+            const diferencia = parseFloat(montoAsignacion) - parseFloat(totalGastos);
+            let mensajeDiferencia = diferencia >= 0
+                ? `<br><span style="color:var(--color-primario);font-weight:bold;">RENDIR CUENTA: ${diferencia.toFixed(2)} Bs.</span>`
+                : `<br><span style="color:var(--color-error);font-weight:bold;">REPONER: ${Math.abs(diferencia).toFixed(2)} Bs.</span>`;
+
+            const confirmed = await showConfirm('Confirmar Registro',
+                `¿Registrar esta asignación?<br><br><strong>Total Gastos: ${totalGastos} Bs.</strong>${mensajeDiferencia}`);
+            if (!confirmed) return;
+
+            showLoading(true);
+            try {
+                const formData = new FormData();
+                formData.append('ciudad_origen', document.getElementById('ciudad_origen').value);
+                formData.append('ciudad_destino', document.getElementById('ciudad_destino').value);
+                formData.append('fecha_salida', document.getElementById('fecha_salida').value);
+                formData.append('fecha_llegada', document.getElementById('fecha_llegada').value);
+                formData.append('monto_asignacion', document.getElementById('monto_asignacion').value);
+
+                const filas = getFilasActivas();
+                const gastos = filas.map(el => recolectarGasto(el));
+                formData.append('gastos', JSON.stringify(gastos));
+
+                filas.forEach((el, index) => {
+                    const doc = el.querySelector('[name="documento"]').files[0];
+                    if (doc) formData.append(`documento_${index}`, doc);
+                });
+
+                const response = await fetch('/api/asignacion', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${getToken()}` },
+                    body: formData
+                });
+
+                let data = {};
+                try {
+                    data = await response.json();
+                } catch (jsonErr) {
+                    console.error('Respuesta no JSON del servidor:', jsonErr);
+                    showToast(`Error del servidor (${response.status}): respuesta inesperada`, 'error');
+                    return;
+                }
+
+                if (response.ok && data.success) {
+                    formularioYaRegistrado = true;
+                    asignacionRegistrada = data.asignacion_id;
+                    document.getElementById('btnRegistrar').disabled = true;
+                    document.getElementById('btnRegistrar').textContent = '✓ REGISTRADO';
+                    document.getElementById('resumenExito').innerHTML = `
+                        <p><strong>Ciudad:</strong> ${document.getElementById('ciudad_origen').value} → ${document.getElementById('ciudad_destino').value}</p>
+                        <p><strong>Total Gastos:</strong> ${totalGastos} Bs.</p>
+                        <p><strong>Resultado:</strong> ${diferencia >= 0 ? 'Rendir ' + diferencia.toFixed(2) : 'Reponer ' + Math.abs(diferencia).toFixed(2)} Bs.</p>
+                    `;
+                    document.getElementById('modalExito').classList.add('active');
+                    await descargarPDFExito();
+                } else {
+                    const msgError = data.error || `Error al registrar (código ${response.status})`;
+                    showToast(msgError, 'error');
+                    console.error('Error de registro:', data);
+                }
+            } catch (error) {
+                console.error('Error de conexión:', error);
+                showToast('Error de conexión con el servidor. Verifique su red e intente de nuevo.', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function descargarPDFExito() {
+            if (!asignacionRegistrada) return;
+            try {
+                const response = await fetch('/api/generar-pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+                    body: JSON.stringify({ asignacion_id: asignacionRegistrada })
+                });
+                if (response.ok) {
+                    const blob = await response.blob();
+                    downloadBlob(blob, `descargo_${asignacionRegistrada}.pdf`);
+                    showToast('PDF descargado correctamente', 'success');
+                } else {
+                    showToast('Error al generar PDF', 'error');
+                }
+            } catch (error) {
+                showToast('Error al descargar PDF', 'error');
+            }
+        }
+
+        function cerrarModalExito() {
+            document.getElementById('modalExito').classList.remove('active');
+            window.location.href = '/usuario/dashboard.html';
+        }
+
+                /* ── SIDEBAR: colapsa en desktop, overlay en móvil/tablet ── */
+        function toggleSidebar() {
+            const sidebar  = document.getElementById('sidebar');
+            const overlay  = document.getElementById('sidebarOverlay');
+
+            if (window.innerWidth > 1024) {
+                /* DESKTOP — colapsar/expandir (solo íconos) */
+                sidebar.classList.toggle('collapsed');
+            } else {
+                /* MÓVIL / TABLET — overlay deslizante */
+                const isOpen = sidebar.classList.contains('active');
+                if (isOpen) {
+                    sidebar.classList.remove('active');
+                    if (overlay) overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                } else {
+                    sidebar.classList.add('active');
+                    if (overlay) overlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+        }
+
+        function cerrarSidebarMovil() {
+            if (window.innerWidth > 1024) return;
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        /* Swipe izquierda para cerrar en móvil */
+        (function() {
+            let startX = 0, startY = 0;
+            document.addEventListener('touchstart', function(e) {
+                startX = e.changedTouches[0].clientX;
+                startY = e.changedTouches[0].clientY;
+            }, { passive: true });
+            document.addEventListener('touchend', function(e) {
+                const dx = e.changedTouches[0].clientX - startX;
+                const dy = e.changedTouches[0].clientY - startY;
+                if (dx < -50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+                    const sidebar = document.getElementById('sidebar');
+                    if (sidebar && sidebar.classList.contains('active')) cerrarSidebarMovil();
+                }
+            }, { passive: true });
+        })();
+
+        /* Limpiar al redimensionar */
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 1024) {
+                document.body.style.overflow = '';
+                const overlay = document.getElementById('sidebarOverlay');
+                if (overlay) overlay.classList.remove('active');
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar) sidebar.classList.remove('active');
+            }
+        });
+
+
+
+        function cerrarSesion() {
+            showConfirm('Cerrar Sesión', '¿Está seguro que desea cerrar sesión?').then(ok => {
+                if (ok) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('usuario');
+                    window.location.href = '/index.html';
+                }
+            });
+        }
+
+        // Recalcular al cambiar de orientación/tamaño
+        window.addEventListener('resize', calcularTotal);
+    </script>
+</body>
+</html>

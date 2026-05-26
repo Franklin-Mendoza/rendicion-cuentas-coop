@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Rendición de Cuentas - LA SAGRADA FAMILIA R.L.</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <img src="/Imagen/Logo Horizontal.jpg" alt="LA SAGRADA FAMILIA R.L." class="login-logo">
+                <h1>"LA SAGRADA FAMILIA" R.L.</h1>
+                <h2>COOPERATIVA DE AHORRO Y CRÉDITO ABIERTA</h2>
+                <p>Sistema de Rendición de Cuentas</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="usuario">👤 Usuario</label>
+                    <input type="text" id="usuario" name="usuario" placeholder="Ingrese su usuario" required autocomplete="username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="contrasena">🔒 Contraseña</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="contrasena" name="contrasena" placeholder="Ingrese su contraseña" required autocomplete="current-password">
+                        <button type="button" class="toggle-password" onclick="togglePassword()">👁️</button>
+                    </div>
+                </div>
+                
+                <div id="errorMessage" class="error-message" style="display: none;">
+                    <span>⚠️</span>
+                    <span id="errorText"></span>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block btn-lg" id="btnLogin">
+                    <span class="btn-text">🔐 Iniciar Sesión</span>
+                    <span class="btn-loader" style="display: none;">⏳ Cargando...</span>
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                <p>Sistema de Rendición de Cuentas v2.0</p>
+                <p>Software - PIPO</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+            
+            if (token && usuario.rol) {
+                redirectByRole(usuario.rol);
+            }
+        });
+
+        function togglePassword() {
+            const input = document.getElementById('contrasena');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const usuario = document.getElementById('usuario').value.trim();
+            const contrasena = document.getElementById('contrasena').value;
+            const btnLogin = document.getElementById('btnLogin');
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            
+            errorMessage.style.display = 'none';
+            btnLogin.disabled = true;
+            btnLogin.querySelector('.btn-text').style.display = 'none';
+            btnLogin.querySelector('.btn-loader').style.display = 'inline';
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario, contrasena })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('usuario', JSON.stringify(data.usuario));
+                    redirectByRole(data.usuario.rol);
+                } else {
+                    errorText.textContent = data.error || 'Usuario o contraseña inválidos';
+                    errorMessage.style.display = 'flex';
+                }
+            } catch (error) {
+                errorText.textContent = 'Error de conexión. Intente nuevamente.';
+                errorMessage.style.display = 'flex';
+            } finally {
+                btnLogin.disabled = false;
+                btnLogin.querySelector('.btn-text').style.display = 'inline';
+                btnLogin.querySelector('.btn-loader').style.display = 'none';
+            }
+        });
+
+        function redirectByRole(rol) {
+            switch(rol) {
+                case 'admin': window.location.href = '/admin/dashboard.html'; break;
+                case 'supervisor': window.location.href = '/supervisor/dashboard.html'; break;
+                default: window.location.href = '/usuario/dashboard.html'; break;
+            }
+        }
+    </script>
+</body>
+</html>
