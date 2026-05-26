@@ -1,40 +1,44 @@
-# Dependencias
+# ===========================
+# DEPENDENCIAS
+# ===========================
 node_modules/
-node_modules
 
-# Variables de entorno
+# ===========================
+# ARCHIVOS DE ENTORNO (SECRETOS)
+# ===========================
 .env
 .env.local
 .env.production
 
-# Logs
-*.log
-logs/
-npm-debug.log*
-
-# Build
-dist/
-build/
-
-# Sistema operativo
+# ===========================
+# ARCHIVOS DE SISTEMA / IDE
+# ===========================
 .DS_Store
 Thumbs.db
 desktop.ini
-
-# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Archivos temporales
-*.tmp
-*.temp
-.cache/
-
-# Package lock (opcional)
-package-lock.json
-
-# Uploads temporales
+# ===========================
+# ARCHIVOS DE DATOS TEMPORALES
+# ===========================
+# ¡OJO! Aquí se guardan las fotos que suban los usuarios.
+# No deben estar en GitHub.
 uploads/
 temp/
+
+# ===========================
+# LOGS
+# ===========================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===========================
+# (OPCIONAL) SI GENERAS BUILDS
+# ===========================
+dist/
+build/
